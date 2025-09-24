@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { buildFormConfig, CustomForm, inputFieldComp, InputTypes, TextInputType } from './CustomForm';
+import { buildFormConfig, CustomForm, inputFieldComp, InputSetup, InputTypes, TextInputType } from './CustomForm';
 import { FieldProps } from './definitions';
 import z from 'zod';
 import inputErrors from './input-errors';
 import { toast } from 'sonner';
-import { InputList } from '../InputList';
+import { InputList } from '../input-list';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // ✅ Schema de validación
 const formSchema = z.object({
@@ -46,7 +47,7 @@ export const Playground = () => {
 
 
   // ✅ Agregar input dinámico
-  const handleAddInput = (inputType: InputTypes) => {
+  const handleAddInput = (inputType: InputTypes, setup?: InputSetup) => {
     const disabled = Math.random() < 0.5;
     const required = Math.random() < 0.5;
     const uuid= crypto.randomUUID().slice(0,4)
@@ -56,8 +57,8 @@ export const Playground = () => {
       placeHolder: "Escribe (name)",
       inputType: inputType,
       keyboardType: TextInputType.DEFAULT,
-      disabled,
-      required,
+      disabled: setup?.disabled ?? disabled,
+      required: setup?.required ?? required,
       // description: `esto es un ${inputType}`,
     }
     setFieldsConfig((prev) => [...prev, [newInput]]);
@@ -78,20 +79,27 @@ export const Playground = () => {
 
   // ✅ Submit
   const handleSubmit = async (data: any) => {
-    toast.info(<pre><b>{JSON.stringify(data, null, 2)}</b></pre>);
+    console.log('.............handleSubmit')
+    // toast.info(<pre><b>{JSON.stringify(data, null, 2)}</b></pre>);
   };
   return (
-    <div className='flex flex-row w-300 h-150'>
-      <div className='flex flex-col  w-300 h-150'> 
+    <div className='grid grid-cols-3 w-full gap-4'>
+
+      <div className='flex flex-col  w-full h-full'> 
         <InputList inputsTypes={inputFieldComp} handleAddInput={handleAddInput}/>
       </div>
-      <div className='flex flex-col  w-300 h-150'>
+
+      <div className='flex flex-col  w-full h-full'>
         <CustomForm formConfig={formConfig} />
       </div>
 
-      <pre className="mt-4 text-xs text-gray-500">
-        {JSON.stringify(fieldsConfig, null, 2)}
-      </pre>
+      <div className='flex flex-col'>
+      <ScrollArea className="h-200 w-full rounded-md border p-4">
+        <pre className="mt-4 text-xs text-gray-500">
+          {JSON.stringify(fieldsConfig, null, 2)}
+        </pre>
+        </ScrollArea>
+      </div>
     </div>
   )
 }

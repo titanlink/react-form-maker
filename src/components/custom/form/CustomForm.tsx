@@ -1,8 +1,7 @@
 "use client"
 
-import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
-import { boolean, z, ZodObject, ZodTypeAny } from "zod"
+import { Form } from "@/components/ui/form";
+import { z, ZodObject, ZodTypeAny } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner";
 import { useForm, UseFormReturn } from "react-hook-form";
@@ -27,7 +26,7 @@ import { InputCheckList } from "./input-check-list";
 import { CustomFieldNumber } from "./input-number";
 import { CustomFormFile } from "./input-file";
 import { CustomFormFieldHidden } from "./input-hidden";
-import { FormErrors } from "./FormErrors";
+import { FormErrors } from "./form-errors";
 
 
 interface Props {
@@ -68,11 +67,7 @@ export const CustomForm = ({formConfig, children}: Props) => {
 
   const handleSubmit = async (data : any) =>{
     try{
-      toast.info(<pre>
-        <b> {JSON.stringify(form,null,2)}</b>
-      </pre>)
       const isValid = config.formSchema.safeParse(data)
-      console.log("🚀 ~ custom -> handleSubmit ~ data:", config.defaultValues)
       startTransition(async () => {
         config.onSubmit(data)
       })
@@ -371,6 +366,19 @@ export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodO
       case "url":
         zf = z.string().url("URL inválida");
         break;
+      
+        case "file":
+        zf = z.any().refine(
+          (file) => {
+            if (!file) return true; // ✅ si no hay archivo, pasa
+            return (
+              file.size <= 25 * 1024 * 1024 &&
+              ["image/jpeg", "image/png", "image/jpg", "image/gif"].includes(file.type)
+            );
+          },
+          { message: "El archivo no puede ser mayor de 25MB y solo JPG/PNG/GIF son permitidos" }
+        );
+        break;
 
       case "text":
       default:
@@ -397,3 +405,9 @@ export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodO
 
   return z.object(shape);
 };
+
+
+export interface InputSetup {
+  required: boolean;
+  disabled: boolean;
+}

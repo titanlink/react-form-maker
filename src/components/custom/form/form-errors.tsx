@@ -1,6 +1,6 @@
 import React from 'react'
 import { FieldValues, FormState } from 'react-hook-form'
-import { CustomAlert } from './CustomAlert'
+import { CustomAlert } from '../custom-alert'
 
 
 interface Props<T extends FieldValues> {
