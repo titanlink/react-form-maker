@@ -2,25 +2,19 @@
 
 import { FormField, FormItem, FormLabel, FormControl, FormDescription, FormMessage, Form } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import { z } from "zod"
+import { boolean, z, ZodObject, ZodTypeAny } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner";
 import { useForm, UseFormReturn } from "react-hook-form";
 
 
-import { useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState, useTransition } from "react";
-import { ArrowLeft, Eye, Loader2, Save } from "lucide-react";
-import Link from "next/link";
+
+import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
+import { Loader2, Save } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import inputErrors from "./input-errors";
-import { TagsInput } from "@/components/ui/tags-input";
-import { CustomFormProps, FieldProps, InputProps } from "./definitions";
+import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { CustomFormProps, FieldProps } from "./definitions";
 import { CustomFormField } from "./input";
 import { Separator } from "@/components/ui/separator";
 import { CustomFormSwitch } from "./input-switch";
@@ -29,6 +23,11 @@ import { CustomFormFieldOTP } from "./input-otp";
 import { CustomFormFieldColor } from "./input-color";
 import CustomFormDate from "./input-date";
 import { InputSwitchList } from "./input-switch-list";
+import { InputCheckList } from "./input-check-list";
+import { CustomFieldNumber } from "./input-number";
+import { CustomFormFile } from "./input-file";
+import { CustomFormFieldHidden } from "./input-hidden";
+import { FormErrors } from "./FormErrors";
 
 
 interface Props {
@@ -41,11 +40,17 @@ export const CustomForm = ({formConfig, children}: Props) => {
   const [config, setConfig] = useState(formConfig)
   const [isPending, startTransition] = useTransition()
   // const config = formConfig
+
+
+  const schema = getDynamicSchema(config.inputConfig)
   const form = useForm<z.infer<typeof config.formSchema>>({
-    resolver: zodResolver(config.formSchema),
+    resolver: useMemo(() => zodResolver(formConfig.formSchema), [formConfig.fieldsConfig]),
     defaultValues: config.defaultValues,
   })
-  const { errors, isSubmitting } = form.formState
+
+  const [errors, setErrors] = useState(form.formState.errors)
+  const [isSubmitting, _] = useState(form.formState.isSubmitting)
+  // const { errors, isSubmitting } = form.formState
 
   console.log("🚀 ~ CustomForm ~ form.formState: (errors)", errors)
 
@@ -63,6 +68,9 @@ export const CustomForm = ({formConfig, children}: Props) => {
 
   const handleSubmit = async (data : any) =>{
     try{
+      toast.info(<pre>
+        <b> {JSON.stringify(form,null,2)}</b>
+      </pre>)
       const isValid = config.formSchema.safeParse(data)
       console.log("🚀 ~ custom -> handleSubmit ~ data:", config.defaultValues)
       startTransition(async () => {
@@ -82,6 +90,7 @@ export const CustomForm = ({formConfig, children}: Props) => {
   const formClass = config.className ?? `grid grid-cols-${columnas} gap-${gap} pt-4`
   return (
     <div className="w-full ">
+      <FormErrors formState={form.formState} />
       {
         config.isFormChild && ( 
         <Form {...form}>
@@ -91,6 +100,10 @@ export const CustomForm = ({formConfig, children}: Props) => {
         </Form>
         )
       }
+      <pre className="mt-4 text-xs text-gray-500">
+        {/* <b>{JSON.stringify(form.getValues(),null,2)}</b> */}
+        <b>{JSON.stringify(form.formState.errors,null,2)}</b>
+      </pre>
       {/* { (config.isFormChild ) && FormContent() } */}
     </div>
   )
@@ -156,7 +169,7 @@ export const CustomForm = ({formConfig, children}: Props) => {
 }
 
 interface BuildFormConfigParams<T extends Record<string, any>> {
-  formSchema: z.ZodObject<any>
+  formSchema?: z.ZodObject<any>
   fieldsConfig: Array<FieldProps| FieldProps[]>
   entity?: T | null
   isFormChild?: boolean
@@ -172,20 +185,21 @@ export const buildFormConfig = <T extends Record<string, any>>({
   isFormChild = true,
   className = "grid grid-cols-3 gap-4"
 }: BuildFormConfigParams<T>): CustomFormProps => {
-  // console.log("🚀 ~ buildFormConfig ~ fieldsConfig:", fieldsConfig)
   const inputs = getInputConfig(fieldsConfig, entity);
-  // console.log("🚀 ~ buildFormConfig ~ inputs:", inputs)
-  const defaultValues = Object.fromEntries(inputs.map(({ name, initValue }) => [name, initValue]));
+  const defaultValues = Object.fromEntries(inputs.map(({ name, value }) => [name, value]));
   const isNew = !entity?.id;
   
   if (!isNew) defaultValues["id"] = entity?.id;
   const formTitle =  `${isNew ? "Registrar" : "Editar"} ${title ?? 'Entidad'}`;
   const btnLabel = isNew ? "Registrar" : "Actualizar";
+  const dynamicSchema =   getDynamicSchema(fieldsConfig)
+  console.log("🚀 ~ buildFormConfig ~ dynamicSchema:", dynamicSchema)
   return {
     formTitle: formTitle,
     inputConfig: inputs,
+    fieldsConfig: fieldsConfig,
     submitBtnLabel: btnLabel,
-    formSchema,
+    formSchema: dynamicSchema,
     defaultValues,
     isFormChild,
     className: className,
@@ -197,7 +211,11 @@ export const buildFormConfig = <T extends Record<string, any>>({
   };
 };
 
-export function getInputType(input: InputProps, form: UseFormReturn, config: CustomFormProps): ReactNode {
+
+
+
+export function getInputType(input: FieldProps, form: UseFormReturn, config: CustomFormProps): ReactNode {
+  // console.log("🚀 ~ getInputType ~ input:", input)
   // if (input.inputType === InputTypes.SELECT && input.dependsOn) {
   //   return <DynamicFormSelect key={input.name} input={input} form={form} />
   // }
@@ -219,22 +237,18 @@ export function getInputType(input: InputProps, form: UseFormReturn, config: Cus
     case InputTypes.SWITCH_LIST:
       return <InputSwitchList key={input.name} input={input} form={form} onCheckedChange={input?.listConfig?.onOptionChange ?? (() => {})}/>
       
-    // case InputTypes.CHECK_LIST:
-    //   return <InputCheckList key={input.name} input={input} onCheckedChange={input?.listConfig?.onOptionChange ?? (() => {})}/>
-    // case InputTypes.NUMBER:
-    //   return <CustomFieldNumber key={input.name} input={input} form={form} />
-    // case InputTypes.FILE:
-    //   return <CustomFormFile key={input.name} input={input} form={form} />
-    // case InputTypes.HIDDEN:
-    //   return <CustomFormFieldHidden key={input.name} input={input} form={form} />
-    //   // return <input type="hidden" name={input.name} value={input.initValue} />
+    case InputTypes.CHECK_LIST:
+      return <InputCheckList key={input.name} input={input} onCheckedChange={input?.listConfig?.onOptionChange ?? (() => {})}/>
+    case InputTypes.NUMBER:
+      return <CustomFieldNumber key={input.name} input={input} form={form} />
+    case InputTypes.FILE:
+      return <CustomFormFile key={input.name} input={input} form={form} />
+    case InputTypes.HIDDEN:
+      return <CustomFormFieldHidden key={input.name} input={input} form={form} />
+      // return <input type="hidden" name={input.name} value={input.value} />
     // case InputTypes.FORM:
     //   const childSchema = config.formSchema.def.shape[input.name].def.innerType.def.element
     //   const fieldsConfig  = generateFieldsFromZod(childSchema)
-
-    //   return <div>
-    //     <pre> {JSON.stringify(input.initValue, null, 2)}</pre> 
-    //   </div>
 
 
     default:
@@ -247,29 +261,28 @@ export function getInputType(input: InputProps, form: UseFormReturn, config: Cus
 export const getInputConfig = <T extends Record<string, any>>(
   fieldsConfig: Array<FieldProps | FieldProps[]>,
   data: T | undefined | null
-): InputProps[] =>
+): FieldProps[] =>
   fieldsConfig.flatMap((fieldGroup) => {
     const fields = Array.isArray(fieldGroup) ? fieldGroup : [fieldGroup];
 
     return fields.map((field) => {
       const rawValue = data?.[field.name as keyof T];
-      let initValue: any = "";
+      let value: any = "";
 
-      initValue = typeof rawValue === "number" ? rawValue : rawValue ?? "";
+      value = typeof rawValue === "number" ? rawValue : rawValue ?? "";
 
       if (field.inputType == InputTypes.SELECT) {
-        initValue = rawValue;
+        value = rawValue;
       }
 
       if (Array.isArray(rawValue) || field.inputType == InputTypes.SWITCH_LIST) {
-        initValue = field?.listConfig?.selectedList;
+        value = field?.listConfig?.selectedList;
       }
 
       return {
         ...field,
-        inputLabel: field.label,
-        initValue,
-        readOnly: field.readOnly ?? false,
+        value: value,
+        disabled: field.disabled ?? false,
         hidden: field.hidden ?? false,
       };
     });
@@ -277,6 +290,7 @@ export const getInputConfig = <T extends Record<string, any>>(
 
 
 
+  
 
 export enum InputTypes {
   HIDDEN = "hidden",
@@ -307,3 +321,79 @@ export enum ButtonTypes {
   customBtnOutlined = 1,
   customBtnText = 2,
 }
+
+export const inputFieldComp = [
+  InputTypes.SELECT,
+  InputTypes.DATE,
+  InputTypes.FILE,
+  InputTypes.FORM,
+  InputTypes.OTP,
+  InputTypes.NUMBER,
+  InputTypes.TEXTAREA,
+  InputTypes.SWITCH,
+  InputTypes.SWITCH_LIST,
+  InputTypes.COLOR,
+  InputTypes.TEXT,
+  InputTypes.HIDDEN,
+]
+
+
+
+
+export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodObject<any> => {
+
+  const mapType = (f: FieldProps): ZodTypeAny => {
+    let zf: z.ZodType<any>;
+
+    switch (f.inputType) {
+      case "date":
+        zf = z.coerce.date();
+        break;
+
+      case "otp":
+        zf = z.string().min(4, "OTP mínimo 4 caracteres").max(10, "OTP máximo 10 caracteres");
+        break;
+
+      case "select":
+        zf = z.string().min(1, "Selecciona un valor");
+        break;
+
+      case "number":
+        zf = z.number();
+        if (f.min !== undefined) zf = (zf as z.ZodNumber).min(f.min, `Mínimo ${f.min}`);
+        if (f.max !== undefined) zf = (zf as z.ZodNumber).max(f.max, `Máximo ${f.max}`);
+        break;
+
+      case "email":
+        zf = z.string().email("Email inválido");
+        break;
+
+      case "url":
+        zf = z.string().url("URL inválida");
+        break;
+
+      case "text":
+      default:
+        zf = z.string();
+        let zff = (zf as z.ZodString)
+        if (f.required) zf = zff.min(1, "Campo obligatorio");
+        if (f.min !== undefined) zf = zff.min(f.min, `Mínimo ${f.min} caracteres`);
+        if (f.max !== undefined) zf = zff.max(f.max, `Máximo ${f.max} caracteres`);
+        // if (f.pattern) zf = zff.regex(f.pattern, "Formato inválido");
+        // if (f.email) zf = zff.email("Email inválido");
+        // if (f.url) zf = zff.url("URL inválida");
+        break;
+    }
+
+    return f.required ? zf : zf.optional();
+  };
+
+  const flatFields: FieldProps[] = fields.flatMap(f => Array.isArray(f) ? f : [f]);
+  const shape: Record<string, ZodTypeAny> = {};
+
+  flatFields.forEach(f => {
+    shape[f.name] = mapType(f);
+  });
+
+  return z.object(shape);
+};

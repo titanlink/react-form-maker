@@ -1,13 +1,13 @@
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { FormField, FormItem, FormLabel, FormDescription, FormMessage, FormControl } from '@/components/ui/form'
-import { InputOption, InputProps } from './definitions'
+import { FieldProps, InputOption } from './definitions'
 import { UseFormReturn } from 'react-hook-form'
 import { Switch } from '@/components/ui/switch'
 
 
 interface Props {
   title?: string,
-  input: InputProps,
+  input: FieldProps,
   form: UseFormReturn,
   onCheckedChange: (value : InputOption) => void
 }
@@ -17,7 +17,7 @@ export const InputSwitchList = ({input, onCheckedChange, form , title}:Props) =>
   if (lista == undefined) lista = []
 
 
-  const initValue: string[] = input.initValue
+  const value: string[] = input.value
   const label = input.optionLabel ?? "name"
   const optionValue = input.optionValue ?? "id"
   const description = input.optionDescription ?? "description"
@@ -29,7 +29,7 @@ export const InputSwitchList = ({input, onCheckedChange, form , title}:Props) =>
       render={({ field }) => (
         <Card className='grid grid-cols-1 bg-blue-200/10'>
           <CardHeader>
-            <CardTitle className="text-base">{title ?? input.inputLabel}</CardTitle>
+            <CardTitle className="text-base">{title ?? input.label}</CardTitle>
           </CardHeader>
           <CardContent>
             {lista.map((item, index) => ( 
@@ -40,7 +40,7 @@ export const InputSwitchList = ({input, onCheckedChange, form , title}:Props) =>
                   <FormMessage />
                 </div>
                 <FormControl>
-                  <Switch checked={!!input.listConfig?.selectedList?.find((option) => option.id == item.id)} onCheckedChange={() => onCheckedChange(item)} aria-readonly disabled={input.readOnly}/>
+                  <Switch checked={!!input.listConfig?.selectedList?.find((option) => option.id == item.id)} onCheckedChange={() => onCheckedChange(item)} aria-disabled disabled={input.disabled}/>
                 </FormControl>
               </FormItem>
             ))}

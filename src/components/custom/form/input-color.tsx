@@ -1,12 +1,13 @@
 "use client"
-import type { Control, FieldPath, FieldValues, UseFormReturn } from "react-hook-form"
+import type {  UseFormReturn } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { ColorInput } from "@/components/ui/color-input"
-import { InputProps } from "./definitions"
+import { FieldProps } from "./definitions"
+
 
 interface Props {
   form: UseFormReturn
-  input: InputProps
+  input: FieldProps
 }
 
 export function CustomFormFieldColor({ form, input }: Props) {
@@ -16,13 +17,13 @@ export function CustomFormFieldColor({ form, input }: Props) {
       name={input.name}
       render={({ field }) => (
         <FormItem >
-          <FormLabel>{input.inputLabel}</FormLabel>
+          <FormLabel>{input.label}</FormLabel>
           <FormControl>
             <ColorInput
               value={field.value}
               onChange={field.onChange}
               onBlur={field.onBlur}
-              disabled={input.readOnly}
+              disabled={input.disabled}
               placeholder={input.placeHolder}
             />
           </FormControl>

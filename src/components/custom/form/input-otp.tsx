@@ -1,11 +1,11 @@
 import type { UseFormReturn } from "react-hook-form"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form"
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "../../ui/input-otp"
-import type { InputProps } from "./definitions"
+import { FieldProps } from "./definitions"
 
 interface Props {
   form: UseFormReturn
-  input: InputProps
+  input: FieldProps
 }
 
 export const CustomFormFieldOTP = ({ form, input }: Props) => {
@@ -16,7 +16,7 @@ export const CustomFormFieldOTP = ({ form, input }: Props) => {
       name={input.name}
       render={({ field }) => (
         <FormItem>
-          <FormLabel>{input.inputLabel}</FormLabel>
+          <FormLabel>{input.label}</FormLabel>
           <FormControl>
             <InputOTP maxLength={6}>
               <InputOTPGroup>

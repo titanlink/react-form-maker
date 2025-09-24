@@ -8,12 +8,12 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import type { InputProps } from "./definitions"
 import type { UseFormReturn } from "react-hook-form"
+import { FieldProps } from "./definitions"
 
 interface Props {
   form: UseFormReturn
-  input: InputProps
+  input: FieldProps
 }
 
 const CustomFormDate = ({ form, input }: Props) => {

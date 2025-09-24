@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { buildFormConfig, CustomForm, InputTypes, TextInputType } from './CustomForm';
+import { buildFormConfig, CustomForm, inputFieldComp, InputTypes, TextInputType } from './CustomForm';
 import { FieldProps } from './definitions';
 import z from 'zod';
 import inputErrors from './input-errors';
@@ -32,24 +32,7 @@ export const Playground = () => {
   const entity = {};
 
   // ✅ Estado de campos dinámicos
-  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>([
-    [{
-      name: "path",
-      label: "Path",
-      placeHolder: "Escribe (path)",
-      inputType: InputTypes.DATE,
-      keyboardType: TextInputType.DEFAULT,
-      optionLabel: "name",
-      optionValue: "id",
-    },],
-    {
-      name: "active",
-      label: "Activo",
-      placeHolder: ``,
-      inputType: InputTypes.TEXT,
-      keyboardType: TextInputType.DEFAULT,
-    },
-  ]);
+  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>([]);
 
   // ✅ Estado de configuración del formulario
   const [formConfig, setFormConfig] = useState(() =>
@@ -61,39 +44,23 @@ export const Playground = () => {
     })
   );
 
-  const inputsAvaibles: FieldProps[] = [
-    {
-      name: "path",
-      label: "Path",
-      placeHolder: "Escribe (path)",
-      inputType: InputTypes.DATE,
-      keyboardType: TextInputType.DEFAULT,
-      optionLabel: "name",
-      optionValue: "id",
-    },
-    {
-      name: "name",
-      label: "name",
-      placeHolder: "Escribe (name)",
-      inputType: InputTypes.TEXT,
-      keyboardType: TextInputType.DEFAULT,
-      optionLabel: "name",
-      optionValue: "id",
-    },
-    {
-      name: "name",
-      label: "name",
-      placeHolder: "Escribe (name)",
-      inputType: InputTypes.SWITCH,
-      keyboardType: TextInputType.DEFAULT,
-      optionLabel: "name",
-      optionValue: "id",
-    },
-  ]
 
   // ✅ Agregar input dinámico
-  const handleAddInput = (input: FieldProps) => {
-    setFieldsConfig((prev) => [...prev, [input]]);
+  const handleAddInput = (inputType: InputTypes) => {
+    const disabled = Math.random() < 0.5;
+    const required = Math.random() < 0.5;
+    const uuid= crypto.randomUUID().slice(0,4)
+    const newInput: FieldProps = {
+      name: `${inputType}_${uuid}`,
+      label: `${inputType}_${uuid}`,
+      placeHolder: "Escribe (name)",
+      inputType: inputType,
+      keyboardType: TextInputType.DEFAULT,
+      disabled,
+      required,
+      // description: `esto es un ${inputType}`,
+    }
+    setFieldsConfig((prev) => [...prev, [newInput]]);
   };
 
   // ✅ Reconstruir config cada vez que cambien los campos
@@ -115,10 +82,10 @@ export const Playground = () => {
   };
   return (
     <div className='flex flex-row w-300 h-150'>
-      <div className='flex flex-col bg-amber-300 w-300 h-150'> 
-        <InputList inputs={inputsAvaibles} handleAddInput={handleAddInput}/>
+      <div className='flex flex-col  w-300 h-150'> 
+        <InputList inputsTypes={inputFieldComp} handleAddInput={handleAddInput}/>
       </div>
-      <div className='flex flex-col bg-amber-500 w-300 h-150'>
+      <div className='flex flex-col  w-300 h-150'>
         <CustomForm formConfig={formConfig} />
       </div>
 
