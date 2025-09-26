@@ -44,7 +44,6 @@ export const InputSwitchList = ({input, onCheckedChange, form , title}:Props) =>
                 </FormControl>
               </FormItem>
             ))}
-            <pre> {JSON.stringify(field, null, 2)}</pre> 
           </CardContent>
         </Card>
       )} 

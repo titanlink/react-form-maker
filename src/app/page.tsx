@@ -11,7 +11,7 @@ export default function Home() {
     <div className="w-full font-sans px-4 py-8 ">
       <main className="flex flex-col  row-start-2 items-center sm:items-start">
         <Playground />
-         <Toaster richColors />
+        <Toaster richColors />
       </main>
     </div>
   );

@@ -6,6 +6,7 @@ import inputErrors from './input-errors';
 import { toast } from 'sonner';
 import { InputList } from '../input-list';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ZodTypeAny } from 'zod';
 
 // ✅ Schema de validación
 const formSchema = z.object({
@@ -38,7 +39,6 @@ export const Playground = () => {
   // ✅ Estado de configuración del formulario
   const [formConfig, setFormConfig] = useState(() =>
     buildFormConfig<any>({
-      formSchema,
       fieldsConfig,
       entity,
       title,
@@ -59,7 +59,8 @@ export const Playground = () => {
       keyboardType: TextInputType.DEFAULT,
       disabled: setup?.disabled ?? disabled,
       required: setup?.required ?? required,
-      // description: `esto es un ${inputType}`,
+      description: ``,
+      ZodTypeAny: z.string().min(required ? 1 : 0, { message: inputErrors.required }) ,
     }
     setFieldsConfig((prev) => [...prev, [newInput]]);
   };
@@ -67,7 +68,6 @@ export const Playground = () => {
   // ✅ Reconstruir config cada vez que cambien los campos
   useEffect(() => {
     const config = buildFormConfig<any>({
-      formSchema,
       fieldsConfig,
       entity,
       title,

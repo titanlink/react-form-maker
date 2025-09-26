@@ -20,13 +20,13 @@ import { CustomFormSwitch } from "./input-switch";
 import { CustomFormSelect } from "./input-select";
 import { CustomFormFieldOTP } from "./input-otp";
 import { CustomFormFieldColor } from "./input-color";
-import CustomFormDate from "./input-date";
 import { InputSwitchList } from "./input-switch-list";
 import { InputCheckList } from "./input-check-list";
 import { CustomFieldNumber } from "./input-number";
 import { CustomFormFile } from "./input-file";
 import { CustomFormFieldHidden } from "./input-hidden";
 import { FormErrors } from "./form-errors";
+import { CustomFormDate } from "./input-date";
 
 
 interface Props {
@@ -188,13 +188,12 @@ export const buildFormConfig = <T extends Record<string, any>>({
   const formTitle =  `${isNew ? "Registrar" : "Editar"} ${title ?? 'Entidad'}`;
   const btnLabel = isNew ? "Registrar" : "Actualizar";
   const dynamicSchema =   getDynamicSchema(fieldsConfig)
-  console.log("🚀 ~ buildFormConfig ~ dynamicSchema:", dynamicSchema)
   return {
     formTitle: formTitle,
     inputConfig: inputs,
     fieldsConfig: fieldsConfig,
     submitBtnLabel: btnLabel,
-    formSchema: dynamicSchema,
+    formSchema: formSchema ?? dynamicSchema,
     defaultValues,
     isFormChild,
     className: className,
@@ -318,18 +317,18 @@ export enum ButtonTypes {
 }
 
 export const inputFieldComp = [
-  InputTypes.SELECT,
-  InputTypes.DATE,
-  InputTypes.FILE,
-  InputTypes.FORM,
-  InputTypes.OTP,
-  InputTypes.NUMBER,
-  InputTypes.TEXTAREA,
-  InputTypes.SWITCH,
-  InputTypes.SWITCH_LIST,
-  InputTypes.COLOR,
   InputTypes.TEXT,
-  InputTypes.HIDDEN,
+  InputTypes.SWITCH,
+  InputTypes.COLOR,
+  InputTypes.OTP,
+  // InputTypes.SELECT,
+  // InputTypes.DATE,
+  // InputTypes.FILE,
+  // InputTypes.FORM,
+  // InputTypes.NUMBER,
+  // InputTypes.TEXTAREA,
+  // InputTypes.SWITCH_LIST,
+  // InputTypes.HIDDEN,
 ]
 
 
@@ -339,6 +338,8 @@ export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodO
 
   const mapType = (f: FieldProps): ZodTypeAny => {
     let zf: z.ZodType<any>;
+
+    if (f.ZodTypeAny) return f.ZodTypeAny;
 
     switch (f.inputType) {
       case "date":
@@ -410,4 +411,13 @@ export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodO
 export interface InputSetup {
   required: boolean;
   disabled: boolean;
+  minLegth?: number;
+  maxLength?: number;
+  pattern?: RegExp;
+  min?:number;
+  max?:number;
+  isObscure?:boolean;
+  isEmail?:boolean;
+  isUrl?:boolean;
+  zopType?: z.ZodType
 }

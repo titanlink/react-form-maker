@@ -7,19 +7,20 @@ import { FieldProps } from "./definitions"
 interface Props {
   form: UseFormReturn
   input: FieldProps
+  className?: string
 }
 
-export const CustomFormField = ({ form, input }: Props) => {
+export const CustomFormField = ({ form, input, className }: Props) => {
   return (
     <FormField
       key={input.name}
       control={form.control}
       name={input.name}
       render={({ field }) => (
-        <FormItem className="shadow-lg">
+        <FormItem className={className}>
           <FormLabel><b>{input.label}</b></FormLabel>
           <FormControl>
-            <Input className="min-w-[180px] bg-white" placeholder={input.placeHolder} {...field} type={input.keyboardType}
+            <Input className="min-w-[180px]" placeholder={input.placeHolder} {...field} type={input.keyboardType}
             disabled={input.disabled}/>
           </FormControl>
           {input.description && <FormDescription>
