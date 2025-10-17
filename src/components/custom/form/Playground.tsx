@@ -3,29 +3,10 @@ import { buildFormConfig, CustomForm, inputFieldComp, InputSetup, InputTypes, Te
 import { FieldProps } from './definitions';
 import z from 'zod';
 import inputErrors from './input-errors';
-import { toast } from 'sonner';
 import { InputList } from '../input-list';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ZodTypeAny } from 'zod';
-
-// ✅ Schema de validación
-const formSchema = z.object({
-  id: z.number().optional().default(0),
-  path: z
-    .any()
-    .refine(
-      (file) => {
-        if (!file) return true; // ✅ si no hay archivo, pasa
-        return (
-          file.size <= 25 * 1024 * 1024 &&
-          ["image/jpeg", "image/png", "image/jpg", "image/gif"].includes(file.type)
-        );
-      },
-      { message: "El archivo no puede ser mayor de 25MB y solo JPG/PNG/GIF son permitidos" }
-    ),
-  type: z.string().min(1, { message: inputErrors.required }),
-  active: z.boolean().optional().default(true),
-});
+import { DynamicForm } from './inputs/DynamicForm';
+import { DynamicFormExample } from './inputs';
 
 
 export const Playground = () => {
@@ -53,14 +34,14 @@ export const Playground = () => {
     const uuid= crypto.randomUUID().slice(0,4)
     const newInput: FieldProps = {
       name: `${inputType}_${uuid}`,
-      label: `${inputType}_${uuid}`,
-      placeHolder: "Escribe (name)",
+      label: `label_${inputType}_${uuid}`,
+      placeHolder: `Escribe (${inputType})`,
       inputType: inputType,
       keyboardType: TextInputType.DEFAULT,
       disabled: setup?.disabled ?? disabled,
       required: setup?.required ?? required,
       description: ``,
-      ZodTypeAny: z.string().min(required ? 1 : 0, { message: inputErrors.required }) ,
+      ZodTypeAny: z.string(inputErrors.required).min(required ? 1 : 0, { message: inputErrors.required }) ,
     }
     setFieldsConfig((prev) => [...prev, [newInput]]);
   };
@@ -90,13 +71,15 @@ export const Playground = () => {
       </div>
 
       <div className='flex flex-col  w-full h-full'>
-        <CustomForm formConfig={formConfig} />
+        {/* <CustomForm formConfig={formConfig} /> */}
+        {/* <DynamicForm formConfig={formConfig} /> */}
+        <DynamicFormExample />
       </div>
 
-      <div className='flex flex-col'>
-      <ScrollArea className="h-200 w-full rounded-md border p-4">
+      <div className='flex flex-col bg-gray-200 rounded-xl'>
+      <ScrollArea className="h-200 w-full rounded-md  p-4">
         <pre className="mt-4 text-xs text-gray-500">
-          {JSON.stringify(fieldsConfig, null, 2)}
+          <code>{JSON.stringify(fieldsConfig, null, 2)}</code>
         </pre>
         </ScrollArea>
       </div>

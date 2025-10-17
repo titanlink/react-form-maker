@@ -19,7 +19,7 @@ export const CustomFormField = ({ form, input, className }: Props) => {
       render={({ field }) => (
         <FormItem className={className}>
           <FormLabel><b>{input.label}</b></FormLabel>
-          <FormControl>
+          <FormControl className="shadow-lg">
             <Input className="min-w-[180px]" placeholder={input.placeHolder} {...field} type={input.keyboardType}
             disabled={input.disabled}/>
           </FormControl>

@@ -45,13 +45,13 @@ export const CustomFormSelect = ({ form, input }: Props) => {
                   <SelectValue placeholder={input.placeHolder} />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              {/* <SelectContent>
                 {lista.map((item) => (
                   <SelectItem value={ getValue(item).toString()} key={item.id}>
                   {item.name}
                 </SelectItem>
                 ))}
-              </SelectContent>
+              </SelectContent> */}
             </Select>
           </FormControl>
           {/* <pre><b>{JSON.stringify(field.value, null, 2) } </b> </pre> */}

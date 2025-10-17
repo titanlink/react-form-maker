@@ -1,7 +1,3 @@
-import type { z } from "zod"
-
-
-
 
 export interface CustomFormProps {
   formTitle: string
@@ -24,7 +20,7 @@ export interface FieldProps {
   placeHolder?: string
   description?: string
   inputType?: InputTypes
-  keyboardType: TextInputType
+  keyboardType?: TextInputType
   disabled?: boolean
   required?: boolean
   value?: any
@@ -55,18 +51,28 @@ export interface FieldProps {
 
 
 interface ListConfig {
-  list: InputOption[]
-  optionLabel: string
-  optionValue: InputOption| string | number | object
-  onOptionChange: (item: InputOption ) => void
+  list: InputOption[] | GroupedOption[]
+  optionLabel?: string
+  optionValue?: InputOption| string | number | object
+  onOptionChange: (item?: InputOption | InputOption[] | GroupedOption ) => void
   optionDescription?: string
   selectedList?: InputOption[]
 }
 
 export interface InputOption {
-  id: number
+  id: number | string
   name: string
+  label?: string
   description?: string
+  disabled?: boolean
+  checked?: boolean
+  groupedLabel?: string
+}
+export interface GroupedOption {
+  id?: number
+  label: string
+  options: InputOption[]
+  totalSelected?: number
   disabled?: boolean
 }
 

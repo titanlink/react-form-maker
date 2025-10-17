@@ -35,12 +35,12 @@ export const InputSwitchList = ({input, onCheckedChange, form , title}:Props) =>
             {lista.map((item, index) => ( 
               <FormItem key={index} className="flex flex-row items-center justify-between rounded-lg border p-3 mt-2  shadow-sm h-12 bg-blue-100/20">
                 <div className="space-y-0.5">
-                  <FormLabel>{item?.name}</FormLabel>
-                  <FormDescription>{item.description}</FormDescription>
+                  {/* <FormLabel>{item?.name}</FormLabel>
+                  <FormDescription>{item.description}</FormDescription> */}
                   <FormMessage />
                 </div>
                 <FormControl>
-                  <Switch checked={!!input.listConfig?.selectedList?.find((option) => option.id == item.id)} onCheckedChange={() => onCheckedChange(item)} aria-disabled disabled={input.disabled}/>
+                  <Switch checked={!!input.listConfig?.selectedList?.find((option) => option.id == item.id)} onCheckedChange={() => {/* onCheckedChange(item) */}} aria-disabled disabled={input.disabled}/>
                 </FormControl>
               </FormItem>
             ))}

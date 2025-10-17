@@ -1,0 +1,16 @@
+export enum InputTypes {
+  HIDDEN = "hidden",
+  TEXT = "text",
+  NUMBER = "number",
+  SWITCH = "switch",
+  SELECT = "select",
+  CHECK_LIST = "checklist",
+  SWITCH_LIST = "switchlist",
+  GROUPED_SWITCH_LIST = "grouped_switchlist",
+  DATE = "date",
+  TEXTAREA = "textarea",
+  FILE = "file",
+  OTP = "otp",
+  FORM = "form",
+  COLOR = "color",
+}

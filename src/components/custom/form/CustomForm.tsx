@@ -1,7 +1,8 @@
 "use client"
 
 import { Form } from "@/components/ui/form";
-import { z, ZodObject, ZodTypeAny } from "zod"
+import { z } from "zod"
+import type { ZodObject, ZodTypeAny } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from "sonner";
 import { useForm, UseFormReturn } from "react-hook-form";
@@ -12,30 +13,34 @@ import { ReactNode, useEffect, useMemo, useState, useTransition } from "react";
 import { Loader2, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { CustomFormProps, FieldProps } from "./definitions";
+import { CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { CustomFormProps, FieldProps, GroupedOption, InputOption } from "./definitions";
 import { CustomFormField } from "./input";
 import { Separator } from "@/components/ui/separator";
 import { CustomFormSwitch } from "./input-switch";
 import { CustomFormSelect } from "./input-select";
 import { CustomFormFieldOTP } from "./input-otp";
-import { CustomFormFieldColor } from "./input-color";
 import { InputSwitchList } from "./input-switch-list";
 import { InputCheckList } from "./input-check-list";
 import { CustomFieldNumber } from "./input-number";
 import { CustomFormFile } from "./input-file";
 import { CustomFormFieldHidden } from "./input-hidden";
-import { FormErrors } from "./form-errors";
+import { CustomFormTextarea } from "./input-textarea";
 import { CustomFormDate } from "./input-date";
+import { FormErrors } from "./form-errors";
+import { CustomFormFieldColor } from "./input-color";
+import { AccordionGroupedSwitches } from "./accordion-grouped-switches";
 
 
 interface Props {
   formConfig: CustomFormProps
   children?: ReactNode;
+  isActive?: boolean
+  className?: string
 }
 
 
-export const CustomForm = ({formConfig, children}: Props) => {
+export const CustomForm = ({formConfig, children, isActive, className}: Props) => {
   const [config, setConfig] = useState(formConfig)
   const [isPending, startTransition] = useTransition()
   // const config = formConfig
@@ -47,11 +52,6 @@ export const CustomForm = ({formConfig, children}: Props) => {
     defaultValues: config.defaultValues,
   })
 
-  const [errors, setErrors] = useState(form.formState.errors)
-  const [isSubmitting, _] = useState(form.formState.isSubmitting)
-  // const { errors, isSubmitting } = form.formState
-
-  console.log("🚀 ~ CustomForm ~ form.formState: (errors)", errors)
 
   useEffect(() => {
     form.reset(config.defaultValues);
@@ -61,8 +61,8 @@ export const CustomForm = ({formConfig, children}: Props) => {
     setConfig(formConfig);
   }, [formConfig]);
 
-  let columnas: number =  config.columns ?? 3;
-  let gap: number =  config.gap ?? 2;
+  const columnas: number =  config.columns ?? 3;
+  const gap: number =  config.gap ?? 2;
 
 
   const handleSubmit = async (data : any) =>{
@@ -72,13 +72,7 @@ export const CustomForm = ({formConfig, children}: Props) => {
         config.onSubmit(data)
       })
     }catch (error) {
-      console.error("Error al enviar el formulario:", error)
       toast.error("Ocurrió un error al enviar el formulario.")
-    } finally {
-      // form.reset()
-      setTimeout(() => {
-        form.resetField("id")
-      }, 1000)
     }
   }
 
@@ -95,17 +89,12 @@ export const CustomForm = ({formConfig, children}: Props) => {
         </Form>
         )
       }
-      <pre className="mt-4 text-xs text-gray-500">
-        {/* <b>{JSON.stringify(form.getValues(),null,2)}</b> */}
-        <b>{JSON.stringify(form.formState.errors,null,2)}</b>
-      </pre>
-      {/* { (config.isFormChild ) && FormContent() } */}
     </div>
   )
 
   function FormContent() {
     return (
-      <Card >
+      <div className={className}> 
         <CardHeader>
           <CardTitle>
             <h1 className="text-3xl">{config.formTitle}</h1>
@@ -158,7 +147,7 @@ export const CustomForm = ({formConfig, children}: Props) => {
             </Button>
           </CardFooter>
         )}
-      </Card>
+      </div>
     )
   }
 }
@@ -230,6 +219,13 @@ export function getInputType(input: FieldProps, form: UseFormReturn, config: Cus
       return <CustomFormDate key={input.name} input={input} form={form}/>
     case InputTypes.SWITCH_LIST:
       return <InputSwitchList key={input.name} input={input} form={form} onCheckedChange={input?.listConfig?.onOptionChange ?? (() => {})}/>
+    case InputTypes.GROUPED_SWITCH_LIST:
+      return <AccordionGroupedSwitches
+        form={form}
+        input={input}
+        groups={input?.listConfig?.list as GroupedOption[] ?? []}
+        onChange={input?.listConfig?.onOptionChange ?? (() => {})}
+      />
       
     case InputTypes.CHECK_LIST:
       return <InputCheckList key={input.name} input={input} onCheckedChange={input?.listConfig?.onOptionChange ?? (() => {})}/>
@@ -237,6 +233,8 @@ export function getInputType(input: FieldProps, form: UseFormReturn, config: Cus
       return <CustomFieldNumber key={input.name} input={input} form={form} />
     case InputTypes.FILE:
       return <CustomFormFile key={input.name} input={input} form={form} />
+    case InputTypes.TEXTAREA:
+      return <CustomFormTextarea key={input.name} input={input} form={form} />
     case InputTypes.HIDDEN:
       return <CustomFormFieldHidden key={input.name} input={input} form={form} />
       // return <input type="hidden" name={input.name} value={input.value} />
@@ -258,21 +256,28 @@ export const getInputConfig = <T extends Record<string, any>>(
 ): FieldProps[] =>
   fieldsConfig.flatMap((fieldGroup) => {
     const fields = Array.isArray(fieldGroup) ? fieldGroup : [fieldGroup];
+    const typeList = [
+      InputTypes.SWITCH_LIST,
+      InputTypes.GROUPED_SWITCH_LIST
+    ]
 
     return fields.map((field) => {
       const rawValue = data?.[field.name as keyof T];
-      let value: any = "";
-
+      let value: unknown = rawValue
+      
       value = typeof rawValue === "number" ? rawValue : rawValue ?? "";
-
-      if (field.inputType == InputTypes.SELECT) {
-        value = rawValue;
-      }
-
-      if (Array.isArray(rawValue) || field.inputType == InputTypes.SWITCH_LIST) {
+      // value = rawValue === null ? undefined : '';
+      
+      if (field.inputType == InputTypes.SELECT) value = rawValue;
+      
+      
+      if (Array.isArray(rawValue) && typeList.includes(field.inputType)) {
         value = field?.listConfig?.selectedList;
       }
-
+      
+      console.warn('============');
+      console.log('rawValue',rawValue);
+      console.log('value',value);
       return {
         ...field,
         value: value,
@@ -294,6 +299,7 @@ export enum InputTypes {
   SELECT = "select",
   CHECK_LIST = "checklist",
   SWITCH_LIST = "switchlist",
+  GROUPED_SWITCH_LIST = "grouped_switchlist",
   DATE = "date",
   TEXTAREA = "textarea",
   FILE = "file",
@@ -317,18 +323,19 @@ export enum ButtonTypes {
 }
 
 export const inputFieldComp = [
+  // InputTypes.GROUPED_SWITCH_LIST,
   InputTypes.TEXT,
   InputTypes.SWITCH,
   InputTypes.COLOR,
   InputTypes.OTP,
-  // InputTypes.SELECT,
-  // InputTypes.DATE,
-  // InputTypes.FILE,
-  // InputTypes.FORM,
-  // InputTypes.NUMBER,
-  // InputTypes.TEXTAREA,
-  // InputTypes.SWITCH_LIST,
-  // InputTypes.HIDDEN,
+  InputTypes.SELECT,
+  InputTypes.DATE,
+  InputTypes.FILE,
+  InputTypes.FORM,
+  InputTypes.NUMBER,
+  InputTypes.TEXTAREA,
+  InputTypes.SWITCH_LIST,
+  InputTypes.HIDDEN,
 ]
 
 
@@ -384,7 +391,7 @@ export const getDynamicSchema = (fields: Array<FieldProps | FieldProps[]>): ZodO
       case "text":
       default:
         zf = z.string();
-        let zff = (zf as z.ZodString)
+        const zff = (zf as z.ZodString)
         if (f.required) zf = zff.min(1, "Campo obligatorio");
         if (f.min !== undefined) zf = zff.min(f.min, `Mínimo ${f.min} caracteres`);
         if (f.max !== undefined) zf = zff.max(f.max, `Máximo ${f.max} caracteres`);
@@ -420,4 +427,37 @@ export interface InputSetup {
   isEmail?:boolean;
   isUrl?:boolean;
   zopType?: z.ZodType
+}
+
+
+export const entityToInputOption = (entitiy:any, name:string = 'name', description:string = 'description', groupedLabel?:string): InputOption => ({
+  id: entitiy['id'],
+  name: entitiy[name],
+  description:  entitiy[description],
+  groupedLabel
+})
+
+
+export const entitiesToInputOption = (data:any[], optionValue:string = 'name', groupedLabel?:string): InputOption[] => {
+  const entities: InputOption[] = [];
+  for (const key of data) {
+    const entidad = entityToInputOption(key, optionValue, undefined, groupedLabel);
+    if(entidad) entities.push(entidad);
+  }
+  return entities;
+}
+export const entityToGroupedOption = (entitiy:any, name:string = 'name'): GroupedOption => ({
+  id: entitiy['id'],
+  label: entitiy[name] || entitiy['label'],
+  options: entitiy['options'] || [],
+})
+
+
+export const entitiesToGroupedOption = (data:any[], optionValue:string = 'name' ): GroupedOption[] => {
+  const entities: GroupedOption[] = [];
+  for (const key of data) {
+    const entidad = entityToGroupedOption(key, optionValue);
+    if(entidad) entities.push(entidad);
+  }
+  return entities;
 }
