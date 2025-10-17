@@ -11,12 +11,13 @@ import { FieldProps } from "./base";
 import { getDefaultValues, getDynamicSchema, InputFactory } from "./input-factory";
 
 interface Props {
-  fields: FieldProps[];
+  fields: Array<FieldProps|FieldProps[]>;
   record?: Record<string, any>;
   onSubmit?: (data: any) => void;
 }
 
 export const DynamicForm = ({ fields, record = {}, onSubmit }: Props) => {
+
   // ✅ Genera el schema usando la función dinámica
   const schema = useMemo(() => getDynamicSchema(fields), [fields]);
 
@@ -41,9 +42,32 @@ export const DynamicForm = ({ fields, record = {}, onSubmit }: Props) => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 p-4">
-        {fields.map((input) => InputFactory.create(input, form))}
-        <Button type="submit">Enviar</Button>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-2">
+        <div className="w-full grid grid-cols-1">
+          {fields.map((input, idx) =>
+            Array.isArray(input)
+              ? 
+              <span key={`field-group-${idx}`} className="w-full  flex flex-row justify-between py-3">
+                {
+                  input.map((field, subIdx) => ( 
+                    <div key={subIdx} className="w-full px-2">
+                      {InputFactory.create(field, form) }
+                    </div>
+                  ))
+                }
+              </span>
+              :
+              (<span key={`field-group-${idx}`} className="flex flex-col justify-between py-3 w-full px-2"> 
+                {InputFactory.create(input, form)}
+              </span>)
+              
+                  
+          )}
+        </div>
+        <div className="flex flex-row">
+          <Button type="submit">Enviar</Button>
+
+        </div>
       </form>
     </Form>
   );

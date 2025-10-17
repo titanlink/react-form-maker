@@ -7,8 +7,8 @@ import { DynamicForm } from "./DynamicForm";
 
 export const DynamicFormExample = ()  => {
   const record = {
-    username: "LuisAngel",
-    email: "luis@example.com",
+    username: "John Doe ",
+    email: "johndoe@example.com",
     isActive: true,
     favoriteColor: "#00ff99",
     age: 25,

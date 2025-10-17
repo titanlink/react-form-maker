@@ -14,7 +14,7 @@ import { FieldProps, InputOption } from "../base/definitions";
 // export const GroupedSwitches = ({ options, onChange, }: Props) => {
 export class GroupedSwitchInput extends BaseInput {
   render(): JSX.Element {
-    const { input, form } = this;
+    const { input } = this;
     return (
       <GroupedSwitches options={[]} input={input}/>
     )

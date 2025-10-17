@@ -16,22 +16,13 @@ export const Playground = () => {
     email: null,
     age: 28,
   };
-  const mockFields: FieldProps[] = [
-    { name: "username", label: "Usuario", inputType: InputTypes.TEXT, ZodTypeAny: z.string().min(2) },
-    { name: "email", label: "Correo", inputType: InputTypes.TEXT, ZodTypeAny: z.string().email() },
+  const mockFields: Array<FieldProps| FieldProps[]> = [
+   [ { name: "username", label: "Usuario", inputType: InputTypes.TEXT, ZodTypeAny: z.string().min(2) },
+    { name: "email", label: "Correo", inputType: InputTypes.TEXT, ZodTypeAny: z.string().email() },]
   ];
 
   // ✅ Estado de campos dinámicos
   const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>(mockFields);
-
-  // // ✅ Estado de configuración del formulario
-  // const [formConfig, setFormConfig] = useState(() =>
-  //   buildFormConfig<any>({
-  //     fieldsConfig,
-  //     entity,
-  //     title,
-  //   })
-  // );
 
 
   // ✅ Agregar input dinámico
@@ -52,21 +43,10 @@ export const Playground = () => {
     }
     console.log("🚀 ~ handleAddInput ~ newInput:", newInput)
     setFieldsConfig((prev) => {
-      return [...prev, [newInput]];
+      return [...prev, newInput];
     });
   };
 
-  // ✅ Reconstruir config cada vez que cambien los campos
-  useEffect(() => {
-    // const config = buildFormConfig<any>({
-    //   fieldsConfig,
-    //   entity,
-    //   title,
-    // });
-    // config.onSubmit = (data) => handleSubmit(data);
-    // config.className = "grid grid-cols-1 gap-4"
-    // setFormConfig(config);
-  }, [fieldsConfig]);
 
   // ✅ Submit
   const handleSubmit = async (data: any) => {
@@ -83,8 +63,8 @@ export const Playground = () => {
 
       <div className='flex flex-col  w-full h-full'>
         {/* <CustomForm formConfig={formConfig} /> */}
-        <DynamicFormExample />
-        {/* <DynamicForm fields={fieldsConfig.flat()} record={record}/> */}
+        {/* <DynamicFormExample /> */}
+        <DynamicForm fields={fieldsConfig} record={record} onSubmit={handleSubmit}/>
       </div>
 
       <div className='flex flex-col bg-gray-200 rounded-xl'>

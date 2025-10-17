@@ -1,4 +1,4 @@
-import { z, ZodTypeAny, ZodObject } from "zod";
+import { z, ZodTypeAny } from "zod";
 import { InputTypes } from "./input-types"
 
 export interface CustomFormProps {

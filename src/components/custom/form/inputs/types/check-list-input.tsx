@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, Checkbox, Label } from '@/com
 
 export class CheckListInput extends BaseInput {
   render(): JSX.Element {
-    const { input, form } = this;
+    const { input } = this;
     const listConfig = input?.listConfig
   // export const InputCheckList = ({input, onCheckedChange, title}:Props) => {
     let lista = listConfig?.list ?? []

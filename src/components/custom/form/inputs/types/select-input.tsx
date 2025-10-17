@@ -42,9 +42,7 @@ const FieldSelect = ({ form, input }: Props) => {
   if (lista == undefined) lista = []
 
   const value: string = input.value ?? ""
-  const label = input.optionLabel ?? "name"
   const optionValue = input?.listConfig?.optionValue ?? input.optionValue ?? "id"
-  const description = input.optionDescription ?? "description"
 
 
   const getValue = (item: InputOption) => {
