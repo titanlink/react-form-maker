@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import "react-color-palette/css"
 
-export interface ColorInputProps {
+export interface Props {
   value?: string
   onChange?: (color: string) => void
   onBlur?: () => void
@@ -16,7 +16,7 @@ export interface ColorInputProps {
   placeholder?: string
 }
 
-const ColorInput = React.forwardRef<HTMLButtonElement, ColorInputProps>(
+const ColorCnInput = React.forwardRef<HTMLButtonElement, Props>(
   ({ value = "#000000", onChange, onBlur, disabled, className }, ref) => {
     const [color, setColor] = useColor(value)
     const [open, setOpen] = React.useState(false)
@@ -62,6 +62,6 @@ const ColorInput = React.forwardRef<HTMLButtonElement, ColorInputProps>(
   },
 )
 
-ColorInput.displayName = "ColorInput"
+ColorCnInput.displayName = "ColorCnInput"
 
-export { ColorInput }
+export { ColorCnInput }

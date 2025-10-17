@@ -1,7 +1,7 @@
 import { JSX } from "react";
 
 import { UseFormReturn } from "react-hook-form";
-import { FieldProps } from "../../definitions";
+import { FieldProps } from "./definitions";
 // import { FieldProps } from "./field-props";
 
 

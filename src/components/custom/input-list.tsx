@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { InputSetup, InputTypes } from "./form/CustomForm";
 import { Switch } from "../ui/switch";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../ui/accordion";
 import { Plus } from 'lucide-react';
+import { InputSetup, InputTypes } from "./form/inputs/base";
 
 interface Props {
   handleAddInput: (type: InputTypes, config?: InputSetup) => void;

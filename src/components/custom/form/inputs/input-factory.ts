@@ -1,6 +1,6 @@
 'use client'
 import { UseFormReturn } from "react-hook-form";
-import { BaseInput } from "./base";
+import { BaseInput, FieldProps, InputTypes } from "./base";
 import { 
   TextInput,
   SelectInput,
@@ -10,32 +10,43 @@ import {
   SwitchInput,
   GroupedSwitchInput,
   OTPInput,
+  FileInput,
+  // TextAreaInput,
   // SwitchListInput,
   // CheckListInput,
 } from "./types";
 import { JSX } from "react";
-import { FieldProps } from "../definitions";
 
 
+type InputClassConstructor = new (
+  input: FieldProps,
+  form: UseFormReturn
+) => BaseInput;
+
+
+const inputMap: Record<InputTypes, InputClassConstructor> = {
+  [InputTypes.TEXT]: TextInput,
+  [InputTypes.SWITCH]: SwitchInput,
+  [InputTypes.COLOR]: ColorInput,
+  [InputTypes.DATE]: DateInput,
+  [InputTypes.NUMBER]: NumberInput,
+  [InputTypes.SELECT]: SelectInput, // NO FUNCIONA //ToDo:
+  [InputTypes.GROUPED_SWITCH_LIST]: GroupedSwitchInput,
+  [InputTypes.OTP]: OTPInput,
+  [InputTypes.FILE]: FileInput,
+  [InputTypes.HIDDEN]: TextInput, // puedes asignar algo genérico
+  [InputTypes.CHECK_LIST]: TextInput,
+  [InputTypes.SWITCH_LIST]: TextInput,
+  [InputTypes.TEXTAREA]: TextInput,
+  [InputTypes.FORM]: TextInput,
+};
 
 export class InputFactory {
   static create(input: FieldProps, form: UseFormReturn): JSX.Element {
-    const inputMap: Record<string, new (input: FieldProps, form: UseFormReturn) => BaseInput> = {
-      text: TextInput,
-      select: SelectInput,
-      color: ColorInput,
-      date: DateInput,
-      number: NumberInput,
-      switch: SwitchInput,
-      grouped_switchlist: GroupedSwitchInput,
-      opt: OTPInput,
-      // switchlist: SwitchListInput,
-      // checklist: CheckListInput,
-      // etc...
-    };
+    const inputType = (input.inputType as InputTypes) ?? InputTypes.TEXT;
 
-    const InputClass = inputMap[input.inputType ?? "text"];
+    const InputClass = inputMap[inputType] ?? TextInput;
     const instance = new InputClass(input, form);
-    return instance.render();
+    return instance.render()
   }
 }

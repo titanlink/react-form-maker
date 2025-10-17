@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { buildFormConfig, CustomForm, inputFieldComp, InputSetup, InputTypes, TextInputType } from './CustomForm';
-import { FieldProps } from './definitions';
 import z from 'zod';
 import inputErrors from './input-errors';
 import { InputList } from '../input-list';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { DynamicForm } from './inputs/DynamicForm';
-import { DynamicFormExample } from './inputs';
+// import { DynamicForm } from './inputs/DynamicForm';
+import { DynamicFormExample } from './inputs/DynamicFormExample';
+import { FieldProps, InputSetup } from './inputs/base/definitions';
+import { inputFieldComp, InputTypes } from './inputs/base/input-types';
 
 
 export const Playground = () => {
@@ -15,16 +15,18 @@ export const Playground = () => {
   const entity = {};
 
   // ✅ Estado de campos dinámicos
-  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>([]);
+  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>([
 
-  // ✅ Estado de configuración del formulario
-  const [formConfig, setFormConfig] = useState(() =>
-    buildFormConfig<any>({
-      fieldsConfig,
-      entity,
-      title,
-    })
-  );
+  ]);
+
+  // // ✅ Estado de configuración del formulario
+  // const [formConfig, setFormConfig] = useState(() =>
+  //   buildFormConfig<any>({
+  //     fieldsConfig,
+  //     entity,
+  //     title,
+  //   })
+  // );
 
 
   // ✅ Agregar input dinámico
@@ -37,7 +39,6 @@ export const Playground = () => {
       label: `label_${inputType}_${uuid}`,
       placeHolder: `Escribe (${inputType})`,
       inputType: inputType,
-      keyboardType: TextInputType.DEFAULT,
       disabled: setup?.disabled ?? disabled,
       required: setup?.required ?? required,
       description: ``,
@@ -48,14 +49,14 @@ export const Playground = () => {
 
   // ✅ Reconstruir config cada vez que cambien los campos
   useEffect(() => {
-    const config = buildFormConfig<any>({
-      fieldsConfig,
-      entity,
-      title,
-    });
-    config.onSubmit = (data) => handleSubmit(data);
-    config.className = "grid grid-cols-1 gap-4"
-    setFormConfig(config);
+    // const config = buildFormConfig<any>({
+    //   fieldsConfig,
+    //   entity,
+    //   title,
+    // });
+    // config.onSubmit = (data) => handleSubmit(data);
+    // config.className = "grid grid-cols-1 gap-4"
+    // setFormConfig(config);
   }, [fieldsConfig]);
 
   // ✅ Submit
@@ -73,7 +74,7 @@ export const Playground = () => {
       <div className='flex flex-col  w-full h-full'>
         {/* <CustomForm formConfig={formConfig} /> */}
         {/* <DynamicForm formConfig={formConfig} /> */}
-        <DynamicFormExample />
+        <DynamicFormExample fields={fieldsConfig.flat()}/>
       </div>
 
       <div className='flex flex-col bg-gray-200 rounded-xl'>

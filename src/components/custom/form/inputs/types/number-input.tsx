@@ -1,3 +1,4 @@
+'use client'
 import { BaseInput } from "../base"
 import { JSX } from "react"
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui"

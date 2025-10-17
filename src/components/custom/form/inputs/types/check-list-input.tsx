@@ -1,4 +1,4 @@
-
+'use client'
 import { JSX } from 'react';
 import { BaseInput } from '../base'
 import { Card, CardContent, CardHeader, CardTitle, Checkbox, Label } from '@/components/ui';
@@ -18,7 +18,7 @@ export class CheckListInput extends BaseInput {
   // export const InputCheckList = ({input, onCheckedChange, title}:Props) => {
     let lista = listConfig?.list ?? []
     if (lista == undefined) lista = []
-    const title = listConfig?.title
+    const title = 'title' //listConfig?.title
 
     const value: string[] = input.value
     const label = (listConfig?.optionLabel ?? "name") as string;

@@ -1,5 +1,19 @@
-import { InputOption, BaseInput } from "../base";
-import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui"
+'use client'
+import { 
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue 
+} from "@/components/ui"
+import { BaseInput } from "../base";
+import { InputOption } from "../base/definitions";
 
 
 
@@ -28,7 +42,7 @@ export class SelectInput extends BaseInput {
             <FormMessage />
           </div>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={value.toString()} value={field.value?.toString() ?? value.toString()}>
+            <Select onValueChange={field.onChange} defaultValue={value?.toString()} value={field.value?.toString() ?? value.toString()}>
               <FormControl>
                 <SelectTrigger className="w-[60%] bg-black/10 dark:bg-white/25">
                   <SelectValue placeholder={input.placeHolder} />

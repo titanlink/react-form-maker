@@ -14,3 +14,19 @@ export enum InputTypes {
   FORM = "form",
   COLOR = "color",
 }
+
+export const inputFieldComp = [
+  InputTypes.GROUPED_SWITCH_LIST,
+  InputTypes.TEXT,
+  InputTypes.SWITCH,
+  InputTypes.COLOR,
+  InputTypes.OTP,
+  InputTypes.SELECT,
+  InputTypes.DATE,
+  InputTypes.FILE,
+  InputTypes.FORM,
+  InputTypes.NUMBER,
+  InputTypes.TEXTAREA,
+  InputTypes.SWITCH_LIST,
+  InputTypes.HIDDEN,
+]

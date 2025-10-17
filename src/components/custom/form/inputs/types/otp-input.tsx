@@ -1,3 +1,4 @@
+'use client'
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from "@/components/ui"
 import { BaseInput } from "../base";
 import { JSX } from "react";
