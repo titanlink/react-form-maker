@@ -69,6 +69,7 @@ export interface InputOption {
   disabled?: boolean
   checked?: boolean
   groupedLabel?: string
+  value?:any
 }
 export interface GroupedOption {
   id?: number
@@ -76,6 +77,7 @@ export interface GroupedOption {
   options: InputOption[]
   totalSelected?: number
   disabled?: boolean
+  value?:any
 }
 
 export interface InputSetup {

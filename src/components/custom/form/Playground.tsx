@@ -3,21 +3,26 @@ import z from 'zod';
 import inputErrors from './input-errors';
 import { InputList } from '../input-list';
 import { ScrollArea } from '@/components/ui/scroll-area';
-// import { DynamicForm } from './inputs/DynamicForm';
-import { DynamicFormExample } from './inputs/DynamicFormExample';
 import { FieldProps, InputSetup } from './inputs/base/definitions';
 import { inputFieldComp, InputTypes } from './inputs/base/input-types';
+import { DynamicForm, DynamicFormExample } from './inputs';
 
 
 export const Playground = () => {
 
   const title = "TEST-FORM";
-  const entity = {};
+  const record = {
+    username: "Luis",
+    email: null,
+    age: 28,
+  };
+  const mockFields: FieldProps[] = [
+    { name: "username", label: "Usuario", inputType: InputTypes.TEXT, ZodTypeAny: z.string().min(2) },
+    { name: "email", label: "Correo", inputType: InputTypes.TEXT, ZodTypeAny: z.string().email() },
+  ];
 
   // ✅ Estado de campos dinámicos
-  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>([
-
-  ]);
+  const [fieldsConfig, setFieldsConfig] = useState<Array<FieldProps| FieldProps[]>>(mockFields);
 
   // // ✅ Estado de configuración del formulario
   // const [formConfig, setFormConfig] = useState(() =>
@@ -31,20 +36,24 @@ export const Playground = () => {
 
   // ✅ Agregar input dinámico
   const handleAddInput = (inputType: InputTypes, setup?: InputSetup) => {
-    const disabled = Math.random() < 0.5;
-    const required = Math.random() < 0.5;
+    console.log("🚀 ~ handleAddInput ~ setup:", setup)
+    const disabled:boolean = setup?.disabled ?? Math.random() < 0.5;
+    const required:boolean = setup?.required ?? Math.random() < 0.5;
     const uuid= crypto.randomUUID().slice(0,4)
     const newInput: FieldProps = {
       name: `${inputType}_${uuid}`,
       label: `label_${inputType}_${uuid}`,
       placeHolder: `Escribe (${inputType})`,
       inputType: inputType,
-      disabled: setup?.disabled ?? disabled,
-      required: setup?.required ?? required,
+      disabled: disabled,
+      required: required,
       description: ``,
-      ZodTypeAny: z.string(inputErrors.required).min(required ? 1 : 0, { message: inputErrors.required }) ,
+      ZodTypeAny: required ? z.string(inputErrors.required).min(required ? 1 : 0, { message: inputErrors.required }): undefined,
     }
-    setFieldsConfig((prev) => [...prev, [newInput]]);
+    console.log("🚀 ~ handleAddInput ~ newInput:", newInput)
+    setFieldsConfig((prev) => {
+      return [...prev, [newInput]];
+    });
   };
 
   // ✅ Reconstruir config cada vez que cambien los campos
@@ -64,6 +73,7 @@ export const Playground = () => {
     console.log('.............handleSubmit')
     // toast.info(<pre><b>{JSON.stringify(data, null, 2)}</b></pre>);
   };
+
   return (
     <div className='grid grid-cols-3 w-full gap-4'>
 
@@ -73,8 +83,8 @@ export const Playground = () => {
 
       <div className='flex flex-col  w-full h-full'>
         {/* <CustomForm formConfig={formConfig} /> */}
-        {/* <DynamicForm formConfig={formConfig} /> */}
-        <DynamicFormExample fields={fieldsConfig.flat()}/>
+        <DynamicFormExample />
+        {/* <DynamicForm fields={fieldsConfig.flat()} record={record}/> */}
       </div>
 
       <div className='flex flex-col bg-gray-200 rounded-xl'>
