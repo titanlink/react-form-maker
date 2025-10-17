@@ -8,6 +8,9 @@ import { JSX } from "react";
 export class OTPInput extends BaseInput {
   render(): JSX.Element {
     const { input, form } = this;
+
+    const totalPositions = Array.from({ length: input.min ?? 6 }, (_, i) => i);
+    
     return (
       <FormField
         key={input.name}
@@ -17,18 +20,18 @@ export class OTPInput extends BaseInput {
           <FormItem>
             <FormLabel>{input.label}</FormLabel>
             <FormControl>
-              <InputOTP maxLength={6}>
-                <InputOTPGroup>
-                  <InputOTPSlot index={0} />
-                  <InputOTPSlot index={1} />
-                  <InputOTPSlot index={2} />
+              <InputOTP maxLength={totalPositions.length} {...field}>
+              <InputOTPGroup>
+                {totalPositions.map((position) => (
+                  <InputOTPSlot index={position} />
+                ))}
                 </InputOTPGroup>
-                <InputOTPSeparator />
+                {/* <InputOTPSeparator />
                 <InputOTPGroup>
                   <InputOTPSlot index={3} />
                   <InputOTPSlot index={4} />
                   <InputOTPSlot index={5} />
-                </InputOTPGroup>
+                </InputOTPGroup> */}
               </InputOTP>
             </FormControl>
             <FormDescription>{input.description}</FormDescription>
