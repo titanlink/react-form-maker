@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import z from 'zod';
-import inputErrors from './input-errors';
+import validationMessages from './input-errors';
 import { InputList } from '../input-list';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { FieldProps, InputSetup } from './inputs/base/definitions';
@@ -17,8 +17,10 @@ export const Playground = () => {
     age: 28,
   };
   const mockFields: Array<FieldProps| FieldProps[]> = [
-   [ { name: "username", label: "Usuario", inputType: InputTypes.TEXT, ZodTypeAny: z.string().min(2) },
-    { name: "email", label: "Correo", inputType: InputTypes.TEXT, ZodTypeAny: z.string().email() },]
+    [ 
+      { name: "username", label: "Usuario", inputType: InputTypes.TEXT, ZodTypeAny: z.string().min(2) },
+      { name: "email", label: "Correo", inputType: InputTypes.TEXT, ZodTypeAny: z.string().email() },
+    ]
   ];
 
   // ✅ Estado de campos dinámicos
@@ -39,7 +41,7 @@ export const Playground = () => {
       disabled: disabled,
       required: required,
       description: ``,
-      ZodTypeAny: required ? z.string(inputErrors.required).min(required ? 1 : 0, { message: inputErrors.required }): undefined,
+      ZodTypeAny: required ? z.string(validationMessages.required).min(required ? 1 : 0, { message: validationMessages.required }): undefined,
     }
     console.log("🚀 ~ handleAddInput ~ newInput:", newInput)
     setFieldsConfig((prev) => {

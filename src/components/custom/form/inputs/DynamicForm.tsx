@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { startTransition, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Form } from "@/components/ui/form";
 
 import { FieldProps } from "./base";
 import { getDefaultValues, getDynamicSchema, InputFactory } from "./input-factory";
+import { FormErrors } from "./base/form-errors";
 
 interface Props {
   fields: Array<FieldProps|FieldProps[]>;
@@ -37,38 +38,45 @@ export const DynamicForm = ({ fields, record = {}, onSubmit }: Props) => {
 
   const handleSubmit = (data: any) => {
     console.log("✅ Datos enviados:", data);
-    onSubmit?.(data);
+    startTransition(async () => {
+      onSubmit?.(data);
+    })
   };
 
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-2">
-        <div className="w-full grid grid-cols-1">
-          {fields.map((input, idx) =>
-            Array.isArray(input)
-              ? 
-              <span key={`field-group-${idx}`} className="w-full  flex flex-row justify-between py-3">
-                {
-                  input.map((field, subIdx) => ( 
-                    <div key={subIdx} className="w-full px-2">
-                      {InputFactory.create(field, form) }
-                    </div>
-                  ))
-                }
-              </span>
-              :
-              (<span key={`field-group-${idx}`} className="flex flex-col justify-between py-3 w-full px-2"> 
-                {InputFactory.create(input, form)}
-              </span>)
-              
-                  
-          )}
-        </div>
-        <div className="flex flex-row">
-          <Button type="submit">Enviar</Button>
 
-        </div>
-      </form>
-    </Form>
+
+  return (
+    <div>
+      <FormErrors formState={form.formState} fields={fields}/>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-col gap-2">
+          <div className="w-full grid grid-cols-1">
+            {fields.map((input, idx) =>
+              Array.isArray(input)
+                ? 
+                <span key={`field-group-${idx}`} className="w-full  flex flex-row justify-between py-3">
+                  {
+                    input.map((field, subIdx) => ( 
+                      <div key={subIdx} className="w-full px-2">
+                        {InputFactory.create(field, form) }
+                      </div>
+                    ))
+                  }
+                </span>
+                :
+                (<span key={`field-group-${idx}`} className="flex flex-col justify-between py-3 w-full px-2"> 
+                  {InputFactory.create(input, form)}
+                </span>)
+                
+                    
+            )}
+          </div>
+          <div className="flex flex-row">
+            <Button type="submit">Enviar</Button>
+
+          </div>
+        </form>
+      </Form>
+    </div>
   );
 };
