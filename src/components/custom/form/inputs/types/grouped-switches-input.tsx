@@ -3,7 +3,7 @@
 import React, { JSX, useState } from "react"
 import { Switch, Label } from "@/components/ui"
 import { BaseInput } from "../base"
-import { InputOption } from "../base/definitions";
+import { FieldProps, InputOption } from "../base/definitions";
 
 
 // interface Props {
@@ -16,17 +16,18 @@ export class GroupedSwitchInput extends BaseInput {
   render(): JSX.Element {
     const { input, form } = this;
     return (
-      <GroupedSwitches options={[]}/>
+      <GroupedSwitches options={[]} input={input}/>
     )
   }
 }
 
 interface Props {
+  input: FieldProps,
   options: InputOption[]
   onChange?: (optionsUpdated: InputOption[]) => void
 }
 
-const GroupedSwitches = ({ options, onChange, }: Props) => {
+const GroupedSwitches = ({ options, onChange, input}: Props) => {
 
   const mockInputOptions:InputOption[] = [
     { id: 1, name: 'MOCK OPTION - PERMISO 1', checked: false },
@@ -56,16 +57,19 @@ const GroupedSwitches = ({ options, onChange, }: Props) => {
   }
 
   return (
-    <div  className={`space-y-4 p-4  border-2 rounded-xl ${allChecked ? 'bg-green-500/5 border-green-400/10' : ''}`}>
+    <div  className={`space-y-4 p-4  border-2 rounded-xl ${allChecked ? 'bg-green-500/5 border-green-400/10' : 'bg-black/5'}`}>
       {/* Switch principal */}
       <div className="flex items-center justify-between border-b pb-2">
-        <Label htmlFor="main">Seleccionar todo</Label>
-        <Switch id="main" checked={allChecked} onCheckedChange={handleMainToggle} />
+        <div>{input.name}</div>
+        <div className="flex flex-row gap-2">
+          <Label htmlFor="main">Seleccionar todo</Label>
+          <Switch id="main" checked={allChecked} onCheckedChange={handleMainToggle} />
+        </div>
       </div>
 
       {/* Switches hijos */}
       {switches.map((opt, index) => (
-        <div key={opt.id} className={`p-2 rounded-lg flex flex-row w-full items-center justify-between ${!(index % 2 )? 'bg-black/20' : 'bg-white/5'}`}>
+        <div key={opt.id} className={`p-2 rounded-lg flex flex-row w-full items-center justify-between ${!(index % 2 )? 'bg-black/5' : 'bg-white/5'}`}>
           <Label htmlFor={opt.id.toString()}>{opt.label || opt.name}</Label>
           <Switch
             id={opt.id.toString()}

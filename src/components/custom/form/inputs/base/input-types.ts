@@ -5,7 +5,7 @@ export enum InputTypes {
   SWITCH = "switch",
   SELECT = "select",
   CHECK_LIST = "checklist",
-  SWITCH_LIST = "switchlist",
+  // SWITCH_LIST = "switchlist",
   GROUPED_SWITCH_LIST = "grouped_switchlist",
   DATE = "date",
   TEXTAREA = "textarea",
@@ -27,6 +27,6 @@ export const inputFieldComp = [
   InputTypes.FORM,
   InputTypes.NUMBER,
   InputTypes.TEXTAREA,
-  InputTypes.SWITCH_LIST,
+  // InputTypes.SWITCH_LIST,
   InputTypes.HIDDEN,
 ]

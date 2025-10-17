@@ -7,6 +7,6 @@ export * from './otp-input';
 export * from './select-input';
 export * from './switch-input';
 // export * from './switch-list-input';
-// export * from './text-area-input';
+export * from './text-area-input';
 export * from './text-input';
 export * from './file-input';

@@ -13,23 +13,47 @@ import {
   SelectValue 
 } from "@/components/ui"
 import { BaseInput } from "../base";
-import { InputOption } from "../base/definitions";
+import { FieldProps, InputOption } from "../base/definitions";
+import { UseFormReturn } from "react-hook-form";
 
 
 
 export class SelectInput extends BaseInput {
   
   render() {
-      const { input, form } = this;
-      const optionValue = input?.listConfig?.optionValue ?? "id"
-      const value = input.value
-      const lista = input?.listConfig?.list ?? [] as InputOption[]
-      const getValue =  (item: InputOption) => {
-        if (optionValue == "name") return item[optionValue]
-        return item.id
-      }
-    return (
-      <FormField
+    const { input, form } = this;
+    return ( <FieldSelect input={input} form={form} /> );
+  }
+}
+
+interface Props {
+  form: UseFormReturn
+  input: FieldProps
+}
+
+const FieldSelect = ({ form, input }: Props) => {
+  const mockInputOptions:InputOption[] = [
+      { id: 1, name: 'MOCK OPTION - PERMISO 1', checked: false },
+      { id: 2, name: 'MOCK OPTION - PERMISO 2', checked: true },
+      { id: 3, name: 'MOCK OPTION - PERMISO 3', checked: false },
+      { id: 4, name: 'MOCK OPTION - PERMISO 4', checked: false },
+    ]
+  let lista = input?.listConfig?.list ?? mockInputOptions as InputOption[]
+  if (lista == undefined) lista = []
+
+  const value: string = input.value ?? ""
+  const label = input.optionLabel ?? "name"
+  const optionValue = input?.listConfig?.optionValue ?? input.optionValue ?? "id"
+  const description = input.optionDescription ?? "description"
+
+
+  const getValue = (item: InputOption) => {
+    if (optionValue == "name") return item[optionValue]
+    return item.id
+  }
+
+  return (
+    <FormField
       key={input.name}
       control={form.control}
       name={input.name}
@@ -42,7 +66,7 @@ export class SelectInput extends BaseInput {
             <FormMessage />
           </div>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={value?.toString()} value={field.value?.toString() ?? value.toString()}>
+            <Select onValueChange={field.onChange} defaultValue={value.toString()} value={field.value?.toString() ?? value.toString()}>
               <FormControl>
                 <SelectTrigger className="w-[60%] bg-black/10 dark:bg-white/25">
                   <SelectValue placeholder={input.placeHolder} />
@@ -63,6 +87,6 @@ export class SelectInput extends BaseInput {
         </FormItem>
       )}
       />
-    );
-  }
+  )
 }
+

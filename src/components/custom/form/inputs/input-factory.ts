@@ -11,8 +11,8 @@ import {
   GroupedSwitchInput,
   OTPInput,
   FileInput,
-  // TextAreaInput,
-  // SwitchListInput,
+  TextAreaInput,
+  // SwitchListInput, // ES LO MISMO QUE => GroupedSwitchInput
   // CheckListInput,
 } from "./types";
 import { JSX } from "react";
@@ -30,15 +30,15 @@ const inputMap: Record<InputTypes, InputClassConstructor> = {
   [InputTypes.COLOR]: ColorInput,
   [InputTypes.DATE]: DateInput,
   [InputTypes.NUMBER]: NumberInput,
-  [InputTypes.SELECT]: SelectInput, // NO FUNCIONA //ToDo:
+  [InputTypes.SELECT]: SelectInput,
   [InputTypes.GROUPED_SWITCH_LIST]: GroupedSwitchInput,
   [InputTypes.OTP]: OTPInput,
   [InputTypes.FILE]: FileInput,
-  [InputTypes.HIDDEN]: TextInput, // puedes asignar algo genérico
-  [InputTypes.CHECK_LIST]: TextInput,
-  [InputTypes.SWITCH_LIST]: TextInput,
-  [InputTypes.TEXTAREA]: TextInput,
-  [InputTypes.FORM]: TextInput,
+  [InputTypes.HIDDEN]: TextInput, //ToDo: // puedes asignar algo genérico
+  [InputTypes.CHECK_LIST]: TextInput, //ToDo:
+  // [InputTypes.SWITCH_LIST]: SwitchListInput, //ToDo:
+  [InputTypes.TEXTAREA]: TextAreaInput,
+  [InputTypes.FORM]: TextInput, //ToDo:
 };
 
 export class InputFactory {
