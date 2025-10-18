@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { FormField } from "@/components/ui/form"
+import { FormControl, FormDescription, FormField, FormItem, FormMessage } from "@/components/ui/form"
 import { BaseInput } from "../base"
 import { JSX } from "react"
 
@@ -40,28 +40,34 @@ export class DateInput extends BaseInput {
           }
 
           return (
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-[280px] justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon />
-                  {date ? format(date, "PPP") : <span>Pick a date</span>}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={handleSelect}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <FormItem >
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-[280px] justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon />
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={handleSelect}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormDescription>{input.description}</FormDescription>
+              <FormMessage />
+            </FormItem>
           )
         }}
       />

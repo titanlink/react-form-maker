@@ -3,6 +3,7 @@
 import z from "zod";
 import { FieldProps, InputTypes, TextInputType } from "./base";
 import { DynamicForm } from "./DynamicForm";
+import validationMessages from "../input-errors";
 
 
 export const DynamicFormExample = ()  => {
@@ -10,7 +11,7 @@ export const DynamicFormExample = ()  => {
     username: "John Doe ",
     email: "johndoe@example.com",
     isActive: true,
-    favoriteColor: "#00ff99",
+    favoriteColor: undefined,
     age: 25,
     role: "editor",
   };
@@ -104,7 +105,7 @@ export const mockFields: FieldProps[] = [
       label: "Fecha de nacimiento",
       inputType: InputTypes.DATE,
       required: true,
-      ZodTypeAny: z.coerce.date().refine((d) => d < new Date(), {
+      ZodTypeAny: z.coerce.date(validationMessages.required).refine((d) => d < new Date(), {
         message: "La fecha no puede ser futura",
       }),
     },
@@ -154,7 +155,7 @@ export const mockFields: FieldProps[] = [
       inputType: InputTypes.OTP,
       required: true,
       ZodTypeAny: z
-        .string()
+        .string(validationMessages.required)
         .min(4, "Debe tener al menos 4 dígitos")
         .max(6, "Debe tener máximo 6 dígitos"),
     },
