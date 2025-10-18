@@ -1,7 +1,7 @@
 "use client";
 
 import z from "zod";
-import { FieldProps, InputTypes } from "./base";
+import { FieldProps, InputTypes, TextInputType } from "./base";
 import { DynamicForm } from "./DynamicForm";
 
 
@@ -16,13 +16,11 @@ export const DynamicFormExample = ()  => {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <DynamicForm
-        fields={mockFields}
-        record={record}
-        onSubmit={(data) => console.log("📤 Resultado final:", data)}
-      />
-    </div>
+    <DynamicForm
+      fields={mockFields}
+      record={record}
+      onSubmit={(data) => console.log("📤 Resultado final:", data)}
+    />
   );
 }
 
@@ -60,6 +58,7 @@ export const mockFields: FieldProps[] = [
       label: "Contraseña",
       inputType: InputTypes.TEXT,
       required: false,
+      keyboardType: TextInputType.PASSWORD,
       ZodTypeAny: z
         .string()
         .min(6, "Debe tener al menos 6 caracteres")
@@ -94,7 +93,7 @@ export const mockFields: FieldProps[] = [
       inputType: InputTypes.NUMBER,
       required: true,
       ZodTypeAny: z
-        .number()
+        .coerce.number("Debe ser un número") // fuerza a number
         .min(18, "Debe ser mayor de 18")
         .max(99, "Debe ser menor de 99"),
     },

@@ -47,7 +47,7 @@ const FieldSelect = ({ form, input }: Props) => {
 
   const getValue = (item: InputOption) => {
     if (optionValue == "name") return item[optionValue]
-    return item.id
+    return item.value ?? item.id
   }
 
   return (

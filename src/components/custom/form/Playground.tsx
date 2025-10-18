@@ -64,9 +64,8 @@ export const Playground = () => {
       </div>
 
       <div className='flex flex-col  w-full h-full'>
-        {/* <CustomForm formConfig={formConfig} /> */}
-        {/* <DynamicFormExample /> */}
-        <DynamicForm fields={fieldsConfig} record={record} onSubmit={handleSubmit}/>
+        <DynamicFormExample />
+        {/* <DynamicForm fields={fieldsConfig} record={record} onSubmit={handleSubmit}/> */}
       </div>
 
       <div className='flex flex-col bg-gray-200 rounded-xl'>
